@@ -1,6 +1,10 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
+
+class Task(BaseModel):
+    title: str
 
 tasks = [
     {"id": 1, "title":"docker course", "done":True},
@@ -29,4 +33,19 @@ async def display_task(id:int):
         if(id==task["id"]):
             return task
     raise HTTPException(status_code=404, detail=f"Task {id} not found")
+
+@app.post("/tasks",status_code=201)
+async def create_task(task_title:Task):
+    if (task_title.title.strip() ==""):
+        raise HTTPException(status_code=400, detail=f"No given title")    
+    id = 0
+    for task in tasks:
+        if task["id"]>id:
+            id=task["id"]
+    task = {
+        "id":id+1, "title":task_title.title, "done":False
+    }
+    tasks.append(task) 
+    return task 
+
     
