@@ -17,29 +17,29 @@ tasks = [
     {"id": 3, "title":"GitLab course", "done":False}
 ]
 
-@app.get("/")
+@app.get("/",description="Show information about this Api")
 async def root():
     return { "name": "Task API", "version": "1.0", "endpoints": ["/tasks"] }
 
 
-@app.get("/health")
+@app.get("/health",description="confirms that the server is running")
 async def health():
     return {"status": "ok"}
 
-@app.get("/tasks")
+@app.get("/tasks",description="Show all tasks")
 async def display_tasks():
     return tasks
 
 from fastapi import HTTPException
 
-@app.get("/tasks/{id}")
+@app.get("/tasks/{id}",description="Read a task")
 async def display_task(id:int):
     for task in tasks:
         if(id==task["id"]):
             return task
     raise HTTPException(status_code=404, detail=f"Task {id} not found")
 
-@app.post("/tasks",status_code=201)
+@app.post("/tasks",status_code=201,description="Create a task")
 async def create_task(task_title:Task):
     if (task_title.title.strip() ==""):
         raise HTTPException(status_code=400, detail=f"No given title")    
@@ -53,7 +53,7 @@ async def create_task(task_title:Task):
     tasks.append(task) 
     return task 
 
-@app.put("/tasks/{id}")
+@app.put("/tasks/{id}",description="Update a task")
 async def update_task(id: int, new_task: Updated_Task):
     the_task = None
     found=False
@@ -74,7 +74,7 @@ async def update_task(id: int, new_task: Updated_Task):
     return the_task
 
 
-@app.delete("/tasks/{id}",status_code=204)
+@app.delete("/tasks/{id}",status_code=204,description="Delete a task")
 async def delete_task(id: int):
     found = False
     for task in tasks:
